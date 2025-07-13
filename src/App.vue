@@ -1,9 +1,19 @@
 <!-- Parent -->
 <template>
   <div>
+    <div class="!my-4">
+      <label class="mb-2">Search Tasks</label>
+      <input
+        v-model="searchTerm"
+        type="text"
+        placeholder="Search task title..."
+        class="border border-zinc-500 px-2 py-1 rounded-lg w-full"
+      />
+    </div>
+
     <ul class="list-disc">
       <ToDoItem
-        v-for="task in tasks"
+        v-for="task in filteredTasks"
         :key="task.id"
         :title="task.title"
         :isCompleted="task.done"
@@ -19,7 +29,7 @@
 </template>
 
 <script setup>
-  import { computed, reactive } from 'vue'
+  import { computed, reactive, ref, watch } from 'vue'
   import ToDoItem from './components/ToDoItem.vue'
 
   const tasks = reactive([
@@ -41,5 +51,20 @@
     const totalTasks = tasks.length
     const completedTasks = tasks.filter((task) => task.done).length
     return totalTasks ? Math.round((completedTasks / totalTasks) * 100) : 0
+  })
+
+  // Search Task
+  const searchTerm = ref('')
+  const filteredTasks = ref([...tasks])
+  let debounceTimer = null
+  watch(searchTerm, (val) => {
+    clearTimeout(debounceTimer)
+
+    debounceTimer = setTimeout(() => {
+      const search = val.trim().toLowerCase()
+      filteredTasks.value = search
+        ? tasks.filter((t) => t.title.toLowerCase().includes(search))
+        : [...tasks]
+    }, 300)
   })
 </script>
