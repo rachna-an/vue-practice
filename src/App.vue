@@ -18,6 +18,7 @@
         v-for="task in filteredTasks"
         :key="task.id"
         :title="task.title"
+        :label="task.label"
         :isCompleted="task.done"
         @toggle-complete="toggleTaskCompletion(task.id)"
       />
@@ -43,18 +44,21 @@
 <script setup>
   import { reactive, computed } from 'vue'
   import ToDoItem from './components/ToDoItem.vue'
-  import { useTaskSearch } from './composables/useTaskSearch'
+  import { useSearch } from './composables/useSearch'
 
   const tasks = reactive([
-    { id: 1, title: 'Code Review', done: false },
-    { id: 2, title: 'Write documentation', done: true },
-    { id: 3, title: 'Fix bugs', done: false },
-    { id: 4, title: 'Design homepage layout', done: true },
-    { id: 5, title: 'Implement search feature', done: false },
-    { id: 6, title: 'Test user registration flow', done: false },
+    { id: 1, title: 'Code Review', label: 'Work', done: false },
+    { id: 2, title: 'Write documentation', label: 'Work', done: true },
+    { id: 3, title: 'Fix bugs', label: 'Work', done: false },
+    { id: 4, title: 'Book dentist appointment', label: 'Health', done: true },
+    { id: 5, title: 'Design homepage layout', label: 'Work', done: true },
+    { id: 6, title: 'Plan weekend trip', label: 'Personal', done: false },
+    { id: 7, title: 'Buy groceries', label: 'Home', done: false },
+    { id: 8, title: 'Renew gym membership', label: 'Health', done: false },
+    { id: 9, title: 'Organize bookshelf', label: 'Home', done: false },
   ])
 
-  const { searchTerm, filteredTasks } = useTaskSearch(tasks)
+  const { searchTerm, filteredItems: filteredTasks } = useSearch(tasks, ['title', 'label'])
 
   const toggleTaskCompletion = (id) => {
     const task = tasks.find((t) => t.id === id)
