@@ -41,9 +41,9 @@
 
 
 <script setup>
-  import { reactive } from 'vue'
+  import { reactive, computed } from 'vue'
   import ToDoItem from './components/ToDoItem.vue'
-  import { useTasks } from './composables/useTasks'
+  import { useTaskSearch } from './composables/useTaskSearch'
 
   const tasks = reactive([
     { id: 1, title: 'Code Review', done: false },
@@ -54,5 +54,16 @@
     { id: 6, title: 'Test user registration flow', done: false },
   ])
 
-  const { searchTerm, filteredTasks, completionRate, toggleTaskCompletion } = useTasks(tasks)
+  const { searchTerm, filteredTasks } = useTaskSearch(tasks)
+
+  const toggleTaskCompletion = (id) => {
+    const task = tasks.find((t) => t.id === id)
+    if (task) task.done = !task.done
+  }
+
+  const completionRate = computed(() => {
+    const totalTasks = tasks.length
+    const completedTasks = tasks.filter((task) => task.done).length
+    return totalTasks ? Math.round((completedTasks / totalTasks) * 100) : 0
+  })
 </script>
