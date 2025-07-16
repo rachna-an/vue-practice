@@ -1,7 +1,7 @@
 <!-- Component: ToDoItem.vue -->
 <template>
-  <li>
-    <input type="checkbox" :checked="isCompleted" @change="emitToggle" class="cursor-pointer" />
+  <li class="bg-zinc-100 p-3 rounded-lg" @click="emitToggle">
+    <input type="checkbox" :checked="isCompleted" class="cursor-pointer" />
     <label :class="{ 'line-through text-gray-400': isCompleted }" class="pl-3">
       {{ title }}
     </label>

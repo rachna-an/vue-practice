@@ -1,17 +1,19 @@
-<!-- Parent -->
 <template>
-  <div>
-    <div class="!my-4">
-      <label class="mb-2">Search Tasks</label>
+  <div class="flex-1 max-w-xl mx-auto p-6 bg-white shadow-md rounded-xl border border-gray-200">
+    <h1 class="text-2xl !font-bold text-gray-800 !mb-4">📝 My Task List</h1>
+
+    <!-- Search Bar -->
+    <div class="!mb-4">
       <input
         v-model="searchTerm"
         type="text"
         placeholder="Search task title..."
-        class="border border-zinc-500 px-2 py-1 rounded-lg w-full"
+        class="w-full border border-gray-300 rounded-md px-3 py-2 focus:outline-none focus:ring-2 focus:ring-green-800/80"
       />
     </div>
 
-    <ul class="list-disc">
+    <!-- Task List -->
+    <ul class="!space-y-2 !mb-6">
       <ToDoItem
         v-for="task in filteredTasks"
         :key="task.id"
@@ -21,16 +23,27 @@
       />
     </ul>
 
-    <div class="progress-bar !mt-10 w-100 h-3 rounded-full bg-neutral-200 relative">
-      <span class="absolute -top-5.5 !text-sm !font-medium">{{ completionRate }}%</span>
-      <div class="bg-green-600 rounded-full h-full" :style="{ width: `${completionRate}%` }"></div>
+    <!-- Progress Summary -->
+    <div>
+      <div class="flex justify-between items-center mb-1">
+        <span class="text-sm font-medium text-gray-700">Progress</span>
+        <span class="text-sm font-semibold text-gray-600">{{ completionRate }}%</span>
+      </div>
+      <div class="w-full h-3 bg-gray-200 rounded-full">
+        <div
+          class="h-full bg-green-500 rounded-full transition-all duration-300"
+          :style="{ width: `${completionRate}%` }"
+        ></div>
+      </div>
     </div>
   </div>
 </template>
 
+
 <script setup>
-  import { computed, reactive, ref, watch } from 'vue'
+  import { reactive } from 'vue'
   import ToDoItem from './components/ToDoItem.vue'
+  import { useTasks } from './composables/useTasks'
 
   const tasks = reactive([
     { id: 1, title: 'Code Review', done: false },
@@ -41,30 +54,5 @@
     { id: 6, title: 'Test user registration flow', done: false },
   ])
 
-  const toggleTaskCompletion = (id) => {
-    const task = tasks.find((t) => t.id === id)
-    if (task) task.done = !task.done
-  }
-
-  // Computed property
-  const completionRate = computed(() => {
-    const totalTasks = tasks.length
-    const completedTasks = tasks.filter((task) => task.done).length
-    return totalTasks ? Math.round((completedTasks / totalTasks) * 100) : 0
-  })
-
-  // Search Task
-  const searchTerm = ref('')
-  const filteredTasks = ref([...tasks])
-  let debounceTimer = null
-  watch(searchTerm, (val) => {
-    clearTimeout(debounceTimer)
-
-    debounceTimer = setTimeout(() => {
-      const search = val.trim().toLowerCase()
-      filteredTasks.value = search
-        ? tasks.filter((t) => t.title.toLowerCase().includes(search))
-        : [...tasks]
-    }, 300)
-  })
+  const { searchTerm, filteredTasks, completionRate, toggleTaskCompletion } = useTasks(tasks)
 </script>
